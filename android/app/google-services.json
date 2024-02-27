@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1058377040322",
+    "firebase_url": "https://wedrive008-default-rtdb.firebaseio.com",
+    "project_id": "wedrive008",
+    "storage_bucket": "wedrive008.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058377040322:android:a3c0660331494d6191165b",
+        "android_client_info": {
+          "package_name": "com.example.users"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl4JLgt0BtFVYKWXjN8OI7giD_eYli6bM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058377040322:android:b5273b7d1a9e3df791165b",
+        "android_client_info": {
+          "package_name": "com.university.drive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl4JLgt0BtFVYKWXjN8OI7giD_eYli6bM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

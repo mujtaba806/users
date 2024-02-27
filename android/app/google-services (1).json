@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170223314980",
+    "project_id": "vdrive-2a69d",
+    "storage_bucket": "vdrive-2a69d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170223314980:android:758e6c340bdcdb5ff790b1",
+        "android_client_info": {
+          "package_name": "com.example.users"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk_UC34cZxoA8Z9_GAZwlY5nhDlkoKzoE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
