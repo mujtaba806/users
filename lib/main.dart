@@ -3,6 +3,7 @@ import 'package:users/ThemeProvider/theme_provider.dart';
 import 'package:users/firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:users/screens/login_screen.dart';
+import 'package:users/screens/main_screen.dart';
 import 'package:users/splashScreen/splash_screen.dart';
 import 'screens/register_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.darktheme,
-      home: const RegisterScreen(),
+      home: const MainScreen(),
     );
   }
 }
