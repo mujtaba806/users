@@ -1,11 +1,11 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 
 class Directions{
    String? humanReadableAddress;
    String? locationName;
    String? locationId;
-   Double? locationLatitude;
-   Double? locationLongitude;
+   double? locationLatitude;
+   double? locationLongitude;
 
    Directions({
    this.humanReadableAddress,

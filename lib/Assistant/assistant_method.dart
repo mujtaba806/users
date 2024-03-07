@@ -5,7 +5,7 @@ import 'package:users/Models/directions.dart';
 import 'package:users/Models/user_model.dart';
 import 'package:users/global/global.dart';
 import 'package:users/global/map_key.dart';
-import 'dart:ffi';
+//import 'dart:ffi';
 class AssistantMethods {
   static void readCurrentOnlineUserInfo() async {
     currentUser = firebaseAuth.currentUser;
@@ -27,8 +27,8 @@ class AssistantMethods {
       humanReadableAddress = requestResponse["results"][0]["fomatted_address"];
 
       Directions userPickUpAddress = Directions();
-      userPickUpAddress.locationLatitude = position.latitude ;
-      userPickUpAddress.locationLatitude = position.longitude ;
+      userPickUpAddress.locationLatitude = position.latitude as double? ;
+      userPickUpAddress.locationLatitude = position.longitude as double? ;
       userPickUpAddress.locationName = humanReadableAddress;
 
       //Provider.of.<AppInfo>(context,listen:false).updatePickUpLocationAddress(userPickUpAddress);
