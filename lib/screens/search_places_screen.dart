@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:users/Assistant/request_assistant.dart';
 import 'package:users/Models/predicted_places.dart';
+import 'package:users/widgets/place_prediction_tile.dart';
+
+import '../global/map_key.dart';
 
 class SearchPlacesScreen extends StatefulWidget {
   const SearchPlacesScreen({super.key});
@@ -9,57 +15,79 @@ class SearchPlacesScreen extends StatefulWidget {
 }
 
 class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
-
   List<PredictedPlaces> placesPredictedList = [];
 
   findPlaceAutoCompleteSearch(String inputText) async {
-
+    if (inputText.length > 1) {
+      String urlAutoCompleteSearch =
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$inputText&key=$mapKey&components=country:BD";
+      var responseAutoCompleteSearch =
+          await RequestAssistant.receiveRequest(urlAutoCompleteSearch);
+      if (responseAutoCompleteSearch == "Error Occured. Failed. No Responce.") {
+        return;
+      }
+      if (responseAutoCompleteSearch["status"] == "Ok") {
+        var placePredictions = responseAutoCompleteSearch["predictions"];
+        var placePredictionsList = (placePredictions as List)
+            .map((jsonData) => PredictedPlaces.fromJson(jsonData))
+            .toList();
+        setState(() {
+          placesPredictedList = placesPredictedList;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool darkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: darkTheme ? Colors.black : Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.blue,
+          backgroundColor: darkTheme ? Colors.amber.shade400 : Colors.blue,
           leading: GestureDetector(
             onTap: () {
               Navigator.pop(context);
             },
             child: Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: darkTheme ? Colors.black : Colors.white,
             ),
           ),
           title: Text(
             "Search & set dropoff location",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: darkTheme ? Colors.black : Colors.white),
           ),
           elevation: 0.0,
         ),
         body: Column(
           children: [
             Container(
-              decoration: BoxDecoration(color: Colors.blue, boxShadow: [
-                BoxShadow(
-                    color: Colors.white54,
-                    blurRadius: 8,
-                    spreadRadius: 0.5,
-                    offset: Offset(0.7, 0.7))
-              ]),
+              decoration: BoxDecoration(
+                  color: darkTheme ? Colors.amber.shade400 : Colors.blue,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.white54,
+                        blurRadius: 8,
+                        spreadRadius: 0.5,
+                        offset: Offset(0.7, 0.7))
+                  ]),
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Icon(
                       Icons.adjust_sharp,
-                      color: Colors.white,
+                      color: darkTheme ? Colors.black : Colors.white,
                     ),
-                    SizedBox(height: 18.0,),
+                    SizedBox(
+                      height: 18.0,
+                    ),
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.all(8),
@@ -69,15 +97,15 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
                           },
                           decoration: InputDecoration(
                               hintText: "Search Location Here...",
-                              fillColor: Colors.white54,
+                              fillColor:
+                                  darkTheme ? Colors.black : Colors.white54,
                               filled: true,
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.only(
                                 left: 11,
                                 top: 8,
                                 bottom: 8,
-                              )
-                          ),
+                              )),
                         ),
                       ),
                     )
@@ -88,17 +116,25 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
             //display place prediction result
             (placesPredictedList.length > 0)
                 ? Expanded(
-              child: ListView.separated(
-                itemCount: placesPredictedList.length,
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context , index ){
-              return
-              },
-                separatorBuilder: separatorBuilder,
-              ),
-            )
-
-
+                    child: ListView.separated(
+                      itemCount: placesPredictedList.length,
+                      physics: ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return PlacePredictionTileDesign(
+                          predictedPlaces: placesPredictedList[index],
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider(
+                          height: 0,
+                          color:
+                              darkTheme ? Colors.amber.shade400 : Colors.blue,
+                          thickness: 0,
+                        );
+                      },
+                    ),
+                  )
+                : Container()
           ],
         ),
       ),

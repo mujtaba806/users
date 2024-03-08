@@ -5,7 +5,8 @@ import 'package:users/Models/directions.dart';
 import 'package:users/Models/user_model.dart';
 import 'package:users/global/global.dart';
 import 'package:users/global/map_key.dart';
-import 'dart:ffi';
+
+// import 'dart:ffi';
 class AssistantMethods {
   static void readCurrentOnlineUserInfo() async {
     currentUser = firebaseAuth.currentUser;
@@ -20,15 +21,16 @@ class AssistantMethods {
 
   static Future<String> searchAddressForGeographicCoordinates(
       Position position, context) async {
-    String apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
-    String humanReadableAddress ="";
-    var requestResponse=await RequestAssistant.receiveRequest(apiUrl);
-    if(requestResponse != "Error Occured. Failed. No Response."){
+    String apiUrl =
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
+    String humanReadableAddress = "";
+    var requestResponse = await RequestAssistant.receiveRequest(apiUrl);
+    if (requestResponse != "Error Occured. Failed. No Response.") {
       humanReadableAddress = requestResponse["results"][0]["fomatted_address"];
 
       Directions userPickUpAddress = Directions();
-      userPickUpAddress.locationLatitude = position.latitude ;
-      userPickUpAddress.locationLatitude = position.longitude ;
+      userPickUpAddress.locationLatitude = position.latitude;
+      userPickUpAddress.locationLatitude = position.longitude;
       userPickUpAddress.locationName = humanReadableAddress;
 
       //Provider.of.<AppInfo>(context,listen:false).updatePickUpLocationAddress(userPickUpAddress);

@@ -9,7 +9,6 @@ import 'package:users/Assistant/assistant_method.dart';
 import 'package:users/global/global.dart';
 import 'package:users/infoHandler/app_info.dart';
 
-
 import '../Models/directions.dart';
 import '../global/map_key.dart';
 
@@ -86,10 +85,11 @@ class _MainScreenState extends State<MainScreen> {
           googleMapApiKey: mapKey);
       setState(() {
         Directions userPickUpAddress = Directions();
-        userPickUpAddress.locationLatitude = pickLocation!.latitude ;
+        userPickUpAddress.locationLatitude = pickLocation!.latitude;
         userPickUpAddress.locationLatitude = pickLocation!.longitude;
         userPickUpAddress.locationName = data.address;
-        Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
+        Provider.of<AppInfo>(context, listen: false)
+            .updatePickUpLocationAddress(userPickUpAddress);
         //_address = data.address;
       });
     } catch (e) {
@@ -113,6 +113,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool darkTheme =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -171,8 +173,131 @@ class _MainScreenState extends State<MainScreen> {
                     Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color:  darkTheme?  Colors.white,
-                        borderRadius: BorderRadius.circular(10)
+                        color: darkTheme ? Colors.black : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: darkTheme
+                                  ? Colors.grey.shade900
+                                  : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on_outlined,
+                                        color: darkTheme
+                                            ? Colors.amber.shade400
+                                            : Colors.blue,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "From",
+                                            style: TextStyle(
+                                                color: darkTheme
+                                                    ? Colors.amber.shade900
+                                                    : Colors.blue,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            Provider.of<AppInfo>(context)
+                                                        .userPickupLocation !=
+                                                    null
+                                                ? (Provider.of<AppInfo>(context)
+                                                            .userPickupLocation!
+                                                            .locationName!)
+                                                        .substring(0, 24) +
+                                                    "..."
+                                                : "Not Getting Address",
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Divider(
+                                  height: 1,
+                                  thickness: 2,
+                                  color: darkTheme
+                                      ? Colors.amber.shade400
+                                      : Colors.blue,
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on_outlined,
+                                          color: darkTheme
+                                              ? Colors.amber.shade400
+                                              : Colors.blue,
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "To",
+                                              style: TextStyle(
+                                                  color: darkTheme
+                                                      ? Colors.amber.shade900
+                                                      : Colors.blue,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              Provider.of<AppInfo>(context)
+                                                          .userDropOffLocation !=
+                                                      null
+                                                  ? (Provider.of<AppInfo>(
+                                                                  context)
+                                                              .userDropOffLocation!
+                                                              .locationName!)
+                                                          .substring(0, 24) +
+                                                      "..."
+                                                  : "Where to?",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                     )
                   ],
@@ -191,12 +316,12 @@ class _MainScreenState extends State<MainScreen> {
             //     padding: EdgeInsets.all(20),
             //     child: Text(
             //       Provider.of<AppInfo>(context).userPickupLocation != null
-            //           ? (Provider.of<AppInfo>(context)
-            //                       .userPickupLocation!
-            //                       .locationName!)
-            //                   .substring(0, 24) +
-            //               "..."
-            //           : "Not Getting Address",
+            //             //           ? (Provider.of<AppInfo>(context)
+            //             //                       .userPickupLocation!
+            //             //                       .locationName!)
+            //             //                   .substring(0, 24) +
+            //             //               "..."
+            //             //           : "Not Getting Address",
             //       overflow: TextOverflow.visible,
             //       softWrap: true,
             //     ),
