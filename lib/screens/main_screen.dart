@@ -5,10 +5,10 @@ import 'package:location/location.dart' as loc;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
 import 'package:users/Assistant/assistant_method.dart';
 import 'package:users/global/global.dart';
 import 'package:users/infoHandler/app_info.dart';
-
 
 import '../Models/directions.dart';
 import '../global/map_key.dart';
@@ -86,10 +86,11 @@ class _MainScreenState extends State<MainScreen> {
           googleMapApiKey: mapKey);
       setState(() {
         Directions userPickUpAddress = Directions();
-        userPickUpAddress.locationLatitude = pickLocation!.latitude ;
+        userPickUpAddress.locationLatitude = pickLocation!.latitude;
         userPickUpAddress.locationLatitude = pickLocation!.longitude;
         userPickUpAddress.locationName = data.address;
-        Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
+        Provider.of<AppInfo>(context, listen: false)
+            .updatePickUpLocationAddress(userPickUpAddress);
         //_address = data.address;
       });
     } catch (e) {
@@ -149,7 +150,7 @@ class _MainScreenState extends State<MainScreen> {
             Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: EdgeInsets.only(bottom: 35.0),
+                padding: const EdgeInsets.only(bottom: 35.0),
                 child: Image.network(
                   'images/location.png',
                   height: 45,
@@ -164,15 +165,124 @@ class _MainScreenState extends State<MainScreen> {
               left: 0,
               right: 0,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+                padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: darkTheme?Colors.black :Colors.white,
-                        borderRadius: BorderRadius.circular(10)
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on_outlined,
+                                        color: Colors.blue,
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'From',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            Provider.of<AppInfo>(context)
+                                                        .userPickupLocation !=
+                                                    null
+                                                ? (Provider.of<AppInfo>(context)
+                                                            .userPickupLocation!
+                                                            .locationName!)
+                                                        .substring(0, 24) +
+                                                    "..."
+                                                : "Not Getting Address",
+                                            style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                const Divider(
+                                  height: 1,
+                                  thickness: 2,
+                                  color: Colors.blue,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.location_on_outlined,
+                                          color: Colors.blue,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'To',
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              Provider.of<AppInfo>(context)
+                                                          .userDropOffLocation !=
+                                                      null
+                                                  ? (Provider.of<AppInfo>(
+                                                                  context)
+                                                              .userDropOffLocation!
+                                                              .locationName!)
+                                                          .substring(0, 24) +
+                                                      "..."
+                                                  : "Where to",
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                     )
                   ],

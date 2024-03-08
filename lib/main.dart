@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:users/infoHandler/app_info.dart';
 import 'package:users/screens/login_screen.dart';
 import 'package:users/screens/main_screen.dart';
+import 'package:users/screens/search_places_screen.dart';
 import 'package:users/splashScreen/splash_screen.dart';
 import 'screens/register_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,13 +35,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context)=>AppInfo(),
-      child:  MaterialApp(
+      create: (context) => AppInfo(),
+      child: MaterialApp(
         title: 'We Drive',
         themeMode: ThemeMode.system,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darktheme,
-        home: const MainScreen(),
+        home: const SearchPlacesScreen(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
