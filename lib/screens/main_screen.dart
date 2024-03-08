@@ -4,9 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:users/Assistant/assistant_method.dart';
 import 'package:users/global/global.dart';
+import 'package:users/infoHandler/app_info.dart';
 
+
+import '../Models/directions.dart';
 import '../global/map_key.dart';
 
 class MainScreen extends StatefulWidget {
@@ -51,6 +55,7 @@ class _MainScreenState extends State<MainScreen> {
   bool activeNearbyDriverKeysLoaded = false;
 
   BitmapDescriptor? activeNearbyIcon;
+
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -66,6 +71,11 @@ class _MainScreenState extends State<MainScreen> {
             userCurrentPosition!, context);
     print("This is our address" + humanReadableAddress);
     userName = userModelCurrentInfo!.name!;
+    userEmail = userModelCurrentInfo!.email!;
+
+    // initializeGeoFireListener();
+
+    //AssistantMethods.readTripsKeysForOnlineUser(context);
   }
 
   getAddressFromLatLng() async {
@@ -75,7 +85,12 @@ class _MainScreenState extends State<MainScreen> {
           longitude: pickLocation!.longitude,
           googleMapApiKey: mapKey);
       setState(() {
-        _address = data.address;
+        Directions userPickUpAddress = Directions();
+        userPickUpAddress.locationLatitude = pickLocation!.latitude ;
+        userPickUpAddress.locationLatitude = pickLocation!.longitude;
+        userPickUpAddress.locationName = data.address;
+        Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
+        //_address = data.address;
       });
     } catch (e) {
       print(e);
@@ -142,22 +157,51 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
+
+            //ui for searching location
             Positioned(
-              top: 40,
-              right: 20,
-              left: 20,
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    color: Colors.white),
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  _address ?? "Set your pickuplocation",
-                  overflow: TextOverflow.visible,
-                  softWrap: true,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: darkTheme?Colors.black :Colors.white,
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                    )
+                  ],
                 ),
               ),
             )
+
+            // Positioned(
+            //   top: 40,
+            //   right: 20,
+            //   left: 20,
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //         border: Border.all(color: Colors.black),
+            //         color: Colors.white),
+            //     padding: EdgeInsets.all(20),
+            //     child: Text(
+            //       Provider.of<AppInfo>(context).userPickupLocation != null
+            //           ? (Provider.of<AppInfo>(context)
+            //                       .userPickupLocation!
+            //                       .locationName!)
+            //                   .substring(0, 24) +
+            //               "..."
+            //           : "Not Getting Address",
+            //       overflow: TextOverflow.visible,
+            //       softWrap: true,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
