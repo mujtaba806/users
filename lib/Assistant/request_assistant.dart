@@ -8,10 +8,11 @@ class RequestAssistant{
     http.Response httpResponse = await http.get(Uri.parse(url));
 
     try{
-      if(httpResponse.statusCode==200)//succesful
+      if(httpResponse.statusCode==200) // succesful
         {
           String responseData = httpResponse.body; //json
           var decodeResponseData = jsonDecode(responseData);
+
           return decodeResponseData;
       }
       else{

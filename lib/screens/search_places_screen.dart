@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:users/Models/predicted_places.dart';
 
 class SearchPlacesScreen extends StatefulWidget {
   const SearchPlacesScreen({super.key});
@@ -8,6 +9,13 @@ class SearchPlacesScreen extends StatefulWidget {
 }
 
 class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
+
+  List<PredictedPlaces> placesPredictedList = [];
+
+  findPlaceAutoCompleteSearch(String inputText) async {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -50,11 +58,47 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
                     Icon(
                       Icons.adjust_sharp,
                       color: Colors.white,
+                    ),
+                    SizedBox(height: 18.0,),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: TextField(
+                          onChanged: (value) {
+                            findPlaceAutoCompleteSearch(value);
+                          },
+                          decoration: InputDecoration(
+                              hintText: "Search Location Here...",
+                              fillColor: Colors.white54,
+                              filled: true,
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.only(
+                                left: 11,
+                                top: 8,
+                                bottom: 8,
+                              )
+                          ),
+                        ),
+                      ),
                     )
                   ],
                 ),
               ),
+            ),
+            //display place prediction result
+            (placesPredictedList.length > 0)
+                ? Expanded(
+              child: ListView.separated(
+                itemCount: placesPredictedList.length,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (context , index ){
+              return
+              },
+                separatorBuilder: separatorBuilder,
+              ),
             )
+
+
           ],
         ),
       ),

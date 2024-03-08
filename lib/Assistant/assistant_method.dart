@@ -1,14 +1,11 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:provider/provider.dart';
 import 'package:users/Assistant/request_assistant.dart';
 import 'package:users/Models/directions.dart';
 import 'package:users/Models/user_model.dart';
 import 'package:users/global/global.dart';
 import 'package:users/global/map_key.dart';
-
-import '../infoHandler/app_info.dart';
-//import 'dart:ffi';
+import 'dart:ffi';
 class AssistantMethods {
   static void readCurrentOnlineUserInfo() async {
     currentUser = firebaseAuth.currentUser;
@@ -27,14 +24,14 @@ class AssistantMethods {
     String humanReadableAddress ="";
     var requestResponse=await RequestAssistant.receiveRequest(apiUrl);
     if(requestResponse != "Error Occured. Failed. No Response."){
-      humanReadableAddress = requestResponse["results"][0]["formatted_address"];
+      humanReadableAddress = requestResponse["results"][0]["fomatted_address"];
 
       Directions userPickUpAddress = Directions();
       userPickUpAddress.locationLatitude = position.latitude ;
-      userPickUpAddress.locationLatitude = position.longitude  ;
+      userPickUpAddress.locationLatitude = position.longitude ;
       userPickUpAddress.locationName = humanReadableAddress;
 
-      Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
+      //Provider.of.<AppInfo>(context,listen:false).updatePickUpLocationAddress(userPickUpAddress);
     }
     return humanReadableAddress;
   }
