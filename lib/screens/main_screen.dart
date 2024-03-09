@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoder2/geocoder2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
@@ -8,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:users/Assistant/assistant_method.dart';
 import 'package:users/global/global.dart';
 import 'package:users/infoHandler/app_info.dart';
+import 'package:users/screens/search_places_screen.dart';
+import 'package:users/widgets/progress_dialog.dart';
+
 
 import '../Models/directions.dart';
 import '../global/map_key.dart';
@@ -60,14 +64,14 @@ class _MainScreenState extends State<MainScreen> {
         desiredAccuracy: LocationAccuracy.high);
     var userCurrentPosition = cPosition;
     LatLng latLngPosition =
-        LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
+        LatLng(userCurrentPosition.latitude, userCurrentPosition.longitude);
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 15);
     newGoogleMapController!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     String humanReadableAddress =
         await AssistantMethods.searchAddressForGeographicCoordinates(
-            userCurrentPosition!, context);
+            userCurrentPosition, context);
     print("This is our address" + humanReadableAddress);
     userName = userModelCurrentInfo!.name!;
     userEmail = userModelCurrentInfo!.email!;
@@ -77,6 +81,115 @@ class _MainScreenState extends State<MainScreen> {
     //AssistantMethods.readTripsKeysForOnlineUser(context);
   }
 
+  Future<void> drawPolyLineFromOriginToDestination(bool darkTheme)async{
+    var originPosition = Provider.of<AppInfo>(context,listen: false).userPickupLocation;
+    var destinationPosition = Provider.of<AppInfo>(context,listen: false).userDropOffLocation;
+
+    var originLatLng= LatLng(originPosition!.locationLatitude!,originPosition.locationLongitude!);
+    var destinationLatLng= LatLng(destinationPosition!.locationLatitude!,destinationPosition.locationLongitude!);
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context)=>ProgressDialog(message: "please wait...",),
+    );
+    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng, destinationLatLng);
+    setState(() {
+      tripDirectionDetailsInfo = directionDetailsInfo;
+    });
+
+    Navigator.pop(context);
+    PolylinePoints pPoints = PolylinePoints();
+    List<PointLatLng> decodePolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.e_points!);
+
+    pLineCoordinatedList.clear();
+
+    if(decodePolyLinePointsResultList.isNotEmpty) {
+      decodePolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
+      pLineCoordinatedList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+
+    polylineSet.clear();
+
+    setState(() {
+      Polyline polyline = Polyline(
+        color: darkTheme?Colors.amberAccent:Colors.blue,
+        polylineId: PolylineId("PolylineID"),
+        jointType: JointType.round,
+        points: pLineCoordinatedList,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        geodesic: true,
+        width: 5,
+      );
+
+      polylineSet.add(polyline);
+    });
+
+    LatLngBounds boundsLatLng;
+    if(originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude){
+      boundsLatLng = LatLngBounds(southwest:destinationLatLng, northeast: originLatLng);
+    }
+    else if(originLatLng.longitude > destinationLatLng.longitude){
+      boundsLatLng = LatLngBounds(
+          southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+          northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+      );
+    }
+    else if(originLatLng.latitude > destinationLatLng.latitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+      );
+    }
+    else{
+      boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
+    }
+    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
+
+    Marker originMarker = Marker(
+        markerId: MarkerId("originID"),
+      infoWindow: InfoWindow(title: originPosition.locationName,snippet: "Origin"),
+      position: originLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+    );
+    Marker destinationMarker = Marker(
+      markerId: MarkerId("destinationID"),
+      infoWindow: InfoWindow(title: destinationPosition.locationName,snippet: "Destination"),
+      position: destinationLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+    );
+
+    setState(() {
+      markerSet.add(originMarker);
+      markerSet.add(destinationMarker);
+    });
+
+    Circle originCircle = Circle(
+        circleId: CircleId("originID"),
+      fillColor: Colors.green,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: originLatLng,
+    );
+
+    Circle destinationCircle = Circle(
+      circleId: CircleId("destinationID"),
+      fillColor: Colors.red,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: destinationLatLng,
+    );
+
+    setState(() {
+      circleSet.add(originCircle);
+      circleSet.add(destinationCircle);
+    });
+  }
+
+
   getAddressFromLatLng() async {
     try {
       GeoData data = await Geocoder2.getDataFromCoordinates(
@@ -85,11 +198,10 @@ class _MainScreenState extends State<MainScreen> {
           googleMapApiKey: mapKey);
       setState(() {
         Directions userPickUpAddress = Directions();
-        userPickUpAddress.locationLatitude = pickLocation!.latitude;
+        userPickUpAddress.locationLatitude = pickLocation!.latitude ;
         userPickUpAddress.locationLatitude = pickLocation!.longitude;
         userPickUpAddress.locationName = data.address;
-        Provider.of<AppInfo>(context, listen: false)
-            .updatePickUpLocationAddress(userPickUpAddress);
+        Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
         //_address = data.address;
       });
     } catch (e) {
@@ -173,8 +285,8 @@ class _MainScreenState extends State<MainScreen> {
                     Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: darkTheme ? Colors.black : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        color: darkTheme?Colors.black:Colors.white,
+                        borderRadius: BorderRadius.circular(10)
                       ),
                       child: Column(
                         children: [
@@ -202,7 +314,7 @@ class _MainScreenState extends State<MainScreen> {
                                       ),
                                       Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             "From",
@@ -215,13 +327,13 @@ class _MainScreenState extends State<MainScreen> {
                                           ),
                                           Text(
                                             Provider.of<AppInfo>(context)
-                                                        .userPickupLocation !=
-                                                    null
+                                                .userPickupLocation !=
+                                                null
                                                 ? (Provider.of<AppInfo>(context)
-                                                            .userPickupLocation!
-                                                            .locationName!)
-                                                        .substring(0, 24) +
-                                                    "..."
+                                                .userPickupLocation!
+                                                .locationName!)
+                                                .substring(0, 24) +
+                                                "..."
                                                 : "Not Getting Address",
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -248,7 +360,16 @@ class _MainScreenState extends State<MainScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(5),
                                   child: GestureDetector(
-                                    onTap: () {},
+                                    onTap: () async{
+                                      //go to  search places screen
+                                      var responseFromSearchScreen=await Navigator.push(context,MaterialPageRoute(builder:(c)=>SearchPlacesScreen() ));
+                                      if(responseFromSearchScreen == "obtainedDropOff"){
+                                        setState(() {
+                                          openNavigationDrawer = false;
+                                        });
+                                      }
+                                      await drawPolyLineFromOriginToDestination(darkTheme);
+                                    },
                                     child: Row(
                                       children: [
                                         Icon(
@@ -262,7 +383,7 @@ class _MainScreenState extends State<MainScreen> {
                                         ),
                                         Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               "To",
@@ -275,14 +396,12 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             Text(
                                               Provider.of<AppInfo>(context)
-                                                          .userDropOffLocation !=
-                                                      null
-                                                  ? (Provider.of<AppInfo>(
-                                                                  context)
-                                                              .userDropOffLocation!
-                                                              .locationName!)
-                                                          .substring(0, 24) +
-                                                      "..."
+                                                  .userDropOffLocation !=
+                                                  null
+                                                  ? Provider.of<AppInfo>(
+                                                  context)
+                                                  .userDropOffLocation!
+                                                  .locationName!
                                                   : "Where to?",
                                               style: TextStyle(
                                                   color: Colors.grey,

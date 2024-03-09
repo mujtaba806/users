@@ -56,7 +56,9 @@ class _PlacePredictionTileDesignState extends State<PlacePredictionTileDesign> {
       bool darkTheme =
           MediaQuery.of(context).platformBrightness == Brightness.dark;
       return ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          getPlaceDirectionsDetails(widget.predictedPlaces!.place_id, context);
+        },
         style: ElevatedButton.styleFrom(
           primary: darkTheme ? Colors.black : Colors.white,
         ),
