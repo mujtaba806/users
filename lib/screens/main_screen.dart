@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:users/Assistant/assistant_method.dart';
 import 'package:users/global/global.dart';
 import 'package:users/infoHandler/app_info.dart';
+import 'package:users/screens/drawer_screen.dart';
+import 'package:users/screens/precise_pickup_location.dart';
 import 'package:users/screens/search_places_screen.dart';
 import 'package:users/widgets/progress_dialog.dart';
 
@@ -24,6 +26,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
   LatLng? pickLocation;
   loc.Location location = loc.Location();
   String? _address;
@@ -37,6 +40,7 @@ class _MainScreenState extends State<MainScreen> {
     zoom: 14.4746,
   );
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
+
   double searchLocationContainerHeight = 220;
   double waitingResponseFromDriverContainerHeight = 0;
   double assignedDriverInfoContainerHeight = 0;
@@ -190,24 +194,24 @@ class _MainScreenState extends State<MainScreen> {
   }
 
 
-  getAddressFromLatLng() async {
-    try {
-      GeoData data = await Geocoder2.getDataFromCoordinates(
-          latitude: pickLocation!.latitude,
-          longitude: pickLocation!.longitude,
-          googleMapApiKey: mapKey);
-      setState(() {
-        Directions userPickUpAddress = Directions();
-        userPickUpAddress.locationLatitude = pickLocation!.latitude ;
-        userPickUpAddress.locationLatitude = pickLocation!.longitude;
-        userPickUpAddress.locationName = data.address;
-        Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
-        //_address = data.address;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  // getAddressFromLatLng() async {
+  //   try {
+  //     GeoData data = await Geocoder2.getDataFromCoordinates(
+  //         latitude: pickLocation!.latitude,
+  //         longitude: pickLocation!.longitude,
+  //         googleMapApiKey: mapKey);
+  //     setState(() {
+  //       Directions userPickUpAddress = Directions();
+  //       userPickUpAddress.locationLatitude = pickLocation!.latitude ;
+  //       userPickUpAddress.locationLatitude = pickLocation!.longitude;
+  //       userPickUpAddress.locationName = data.address;
+  //       Provider.of<AppInfo>(context,listen: false).updatePickUpLocationAddress(userPickUpAddress);
+  //       //_address = data.address;
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
@@ -232,6 +236,8 @@ class _MainScreenState extends State<MainScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        key: _scaffoldState,
+        drawer: DrawerScreen(),
         body: Stack(
           children: [
             GoogleMap(
@@ -249,25 +255,46 @@ class _MainScreenState extends State<MainScreen> {
                 setState(() {});
                 locateUserPosition();
               },
-              onCameraMove: (CameraPosition? position) {
-                if (pickLocation != position!.target) {
-                  setState(() {
-                    pickLocation = position.target;
-                  });
-                }
-              },
-              onCameraIdle: () {
-                getAddressFromLatLng();
-              },
+              // onCameraMove: (CameraPosition? position) {
+              //   if (pickLocation != position!.target) {
+              //     setState(() {
+              //       pickLocation = position.target;
+              //     });
+              //   }
+              // },
+              // onCameraIdle: () {
+              //   getAddressFromLatLng();
+              // },
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 35.0),
-                child: Image.network(
-                  'images/location.png',
-                  height: 45,
-                  width: 45,
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: Padding(
+            //     padding: EdgeInsets.only(bottom: 35.0),
+            //     child: Image.network(
+            //       'images/location.png',
+            //       height: 45,
+            //       width: 45,
+            //     ),
+            //   ),
+            // ),
+
+            //custom hamburger button for drawer
+            
+            Positioned(
+              top: 50,
+              left: 20,
+              child: Container(
+                child: GestureDetector(
+                  onTap: (){
+                    _scaffoldState.currentState!.openDrawer();
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: darkTheme ? Colors.amber.shade400 : Colors.white,
+                    child: Icon(
+                      Icons.menu,
+                      color: darkTheme ? Colors.black : Colors.lightBlue,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -415,7 +442,59 @@ class _MainScreenState extends State<MainScreen> {
                                 ),
                               ],
                             ),
+                          ),
+
+                          SizedBox(height: 5,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (c) =>PrecisePickUpScreen()));
+                                },
+                                child: Text(
+                                  "Change Pick Up",
+                                  style: TextStyle(
+                                    color: darkTheme? Colors.black : Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  primary: darkTheme? Colors.amber.shade400 : Colors.blue,
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  )
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+
+                              ElevatedButton(
+                                onPressed: (){
+                                },
+                                child: Text(
+                                  "Request a Ride",
+                                  style: TextStyle(
+                                    color: darkTheme? Colors.black : Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    primary: darkTheme? Colors.amber.shade400 : Colors.blue,
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    )
+                                ),
+                              ),
+
+
+
+
+                            ],
                           )
+
+
+
+
                         ],
                       ),
                     )
