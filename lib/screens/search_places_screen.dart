@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:users/Assistant/request_assistant.dart';
 import 'package:users/Models/predicted_places.dart';
@@ -70,7 +68,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
             Container(
               decoration: BoxDecoration(
                   color: darkTheme ? Colors.amber.shade400 : Colors.blue,
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                         color: Colors.white54,
                         blurRadius: 8,
@@ -78,19 +76,19 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
                         offset: Offset(0.7, 0.7))
                   ]),
               child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Column(
+                padding: const EdgeInsets.all(10),
+                child: Row(
                   children: [
                     Icon(
                       Icons.adjust_sharp,
                       color: darkTheme ? Colors.black : Colors.white,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 18.0,
                     ),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: TextField(
                           onChanged: (value) {
                             findPlaceAutoCompleteSearch(value);
@@ -101,7 +99,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
                                   darkTheme ? Colors.black : Colors.white54,
                               filled: true,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.only(
+                              contentPadding: const EdgeInsets.only(
                                 left: 11,
                                 top: 8,
                                 bottom: 8,
@@ -114,11 +112,12 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen> {
               ),
             ),
             //display place prediction result
-            (placesPredictedList.length > 0)
+            (placesPredictedList.isNotEmpty)
                 ? Expanded(
+                    // Wrap the ListView with Expanded
                     child: ListView.separated(
                       itemCount: placesPredictedList.length,
-                      physics: ClampingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       itemBuilder: (context, index) {
                         return PlacePredictionTileDesign(
                           predictedPlaces: placesPredictedList[index],
